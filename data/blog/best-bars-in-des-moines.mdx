@@ -10,15 +10,14 @@ image: '/static/images/best-bars-in-des-moines/banner.png'
   src={`/static/images/best-bars-in-des-moines/banner.png`}
   width={1800}
   height={1200}
-  priority
 />
 
 I’m always on the lookout for a better solution to problems I face. Often, that involves using my knowledge of programming to quickly gather relevant information and create a solution. While browsing Google trying to decide where to grab a drink in Des Moines, I noticed a lot of bars weren’t being accurately represented by their ratings. They might have a 4.5/5.0, but only three people had written a review. On the opposite end of the spectrum, they might have a terrible rating written by a single angry customer. This led me to check other sources to see if what I’d found matched up with others.
 
 After browsing [Yelp](https://www.yelp.com) and [Foursquare](https://www.foursquare.com), I noticed a handful of cases where ratings and reviews didn’t match up. Wouldn’t it be convenient if there was an overall rating that combined all of these sources? This led me to create [Guesstimator](https://github.com/leerob/Guesstimator), a program that accomplishes just that. With this newly created tool, I set out to compile a list of the 10 best bars in Des Moines. Here’s what I found:
 
-| Name                         | Rating | Sources |
-| :--------------------------- | :----: | ------: |
+| Name | Rating | Sources |
+| --------------------------- | ---- | ------ |
 | El Bait Shop                 |  8.93  |       3 |
 | Hessen Haus                  |  8.43  |       3 |
 | The Royal Mile               |  8.28  |       2 |
@@ -46,13 +45,28 @@ There’s a few exceptions to this list that stick out to me. Joker’s, The Exc
 
 After researching similar rating strategies, I settled on using a [Bayesian estimate](https://en.wikipedia.org/wiki/Bayes_estimator). This is how [IMDb](http://www.imdb.com/help/show_leaf?votestopfaq) and [BeerAdvocate](https://www.beeradvocate.com/lists/top/) rank their Top 250 lists. This essentially normalizes ratings based on the number of ratings for each business.
 
-```bash
+```bash {3} showLineNumbers
 Weighted Rating (WR) = (v ÷ (v + m)) × R + (m ÷ (v + m)) × C
 Where:
 R = rating average for this business
 v = number of ratings for this business
 m = minimum ratings required
 C = the mean rating across the entire list
+```
+
+```js {4} showLineNumbers
+import { useFloating } from "@floating-ui/react";
+
+function MyComponent() {
+  const { refs, floatingStyles } = useFloating();
+
+  return (
+    <>
+      <div ref={refs.setReference} />
+      <div ref={refs.setFloating} style={floatingStyles} />
+    </>
+  );
+}
 ```
 
 After analyzing the raw output from Guesstimator, I filtered the results removing establishments that were primarily restaurants and re-sorted ranks accounting for the number of data sources.

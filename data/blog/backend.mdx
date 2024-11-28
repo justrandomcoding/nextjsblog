@@ -77,23 +77,6 @@ These low code tools are arguably the fastest way to get access to some remote d
 Common examples include [Google Sheets](https://github.com/franciscop/use-spreadsheet) or [Airtable](https://www.gatsbyjs.org/packages/gatsby-source-airtable/)
 as a database. There are other services that provide an [API abstraction](https://nocodeapi.com/) on a variety of data sources.
 
-<ProsCard
-  title="low code"
-  pros={[
-    'You are very familiar with spreadsheets',
-    'You only have a basic understanding of web development',
-    'You want the quickest solution possible',
-    'You need to collaborate with many people on data entry'
-  ]}
-/>
-
-<ConsCard
-  title="low code"
-  cons={[
-    'Higher probability of needing to change services at scale',
-    'Some low code tools require paid plans'
-  ]}
-/>
 
 ## Terms To Understand
 
@@ -228,25 +211,6 @@ You might see these referred to as "in a box" solutions. For example, Hasura pro
 
 Supabase is an open-source alternative to Firebase. But it's really much more than that. If you want Postgres, you'll want Supabase, hands down. They also have [authentication](https://supabase.com/auth), [storage](https://supabase.com/storage), and support for [GraphQL](https://supabase.com/blog/2021/12/03/pg-graphql).
 
-<ProsCard
-  title="Supabase"
-  pros={[
-    'You need to launch an application quick',
-    'You want authentication included',
-    'You need to support social logins',
-    'You need real-time data',
-    'You want to use Postgres'
-  ]}
-/>
-
-<ConsCard
-  title="Supabase"
-  cons={[
-    'You want to use MySQL instead of Postgres',
-    `You don't want to bet on an earlier stage company`
-  ]}
-/>
-
 ### Hasura
 
 Hasura allows you to create an instant GraphQL API based on Postgres. With [Hasura Cloud](https://hasura.io/cloud/), it's easy
@@ -259,23 +223,7 @@ on the free tier.
 While Hasura generally recommends using Auth0 for authorization, it's possible to [roll your own](https://hasura.io/docs/1.0/graphql/manual/auth/index.html).
 If you want authentication included with Hasura, consider [Nhost](https://nhost.io/).
 
-<ProsCard
-  title="Hasura"
-  pros={[
-    'You need to launch an application quick',
-    'You want to use GraphQL',
-    'You need an easy watch to extend an existing service (Remote Schema)',
-    `You don't already have a database`
-  ]}
-/>
 
-<ConsCard
-  title="Hasura"
-  cons={[
-    `You'll need lots of custom backend logic`,
-    'You want authentication included zero-config'
-  ]}
-/>
 
 ### Build Your Own Backend
 
@@ -310,23 +258,7 @@ Prisma provides an auto-generated and type-safe query builder based on your data
 If you want to build a GraphQL API with Prisma, you can pair it with [Nexus](https://nexus.js.org/). Nexus has [plug-ins](https://nexus.js.org/docs/api-plugins)
 for authentication / authorization.
 
-<ProsCard
-  title="Prisma"
-  pros={[
-    'You have an existing database',
-    'You want to use TypeScript',
-    'You have highly relational data',
-    'You want the freedom of choosing any SQL-based solution'
-  ]}
-/>
 
-<ConsCard
-  title="Prisma"
-  cons={[
-    `You want a solution that provides the API for you`,
-    `You don't want to worry about self-hosting`
-  ]}
-/>
 
 ## Should You Use a CMS?
 
