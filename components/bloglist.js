@@ -14,7 +14,7 @@ export function BlogList( {posts}) {
                                 key={tag}
                                 className=" mr-2 inline-flex items-center justify-center rounded-full bg-white px-4 py-1 text-sm font-semibold capitalize text-[#1D2430]"
                             >
-                                    <a href={`/tags/${tag}`}>{tag}</a>
+                                    <a href={`/blog/tags/${tag}`}>{tag}</a>
 
                                 </span>
                         ))}

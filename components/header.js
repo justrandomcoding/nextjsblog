@@ -47,6 +47,7 @@ export default function Header({children, home}) {
     });
 
     const usePathName = usePathname();
+
     return (
         <>
             <header
@@ -56,10 +57,16 @@ export default function Header({children, home}) {
                         : "absolute bg-[#1D2430]"
                 }`}
             >
-                <div className="container">
-                    <div className="relative -mx-4 flex items-center justify-between">
-                        <div className="w-60 max-w-full px-4 xl:mr-12 min-h-16">
+                <div className="container w-full mx-auto">
+                    <div className="relative mx-4 flex items-center justify-between">
+                        <div className="ml-8 mr-16">
+                            <Link
+                                href="/"
+                                className="header-logo block w-full"
 
+                            >
+                            <img width={60} src="/images/logo.png"/>
+                                </Link>
                         </div>
                         <div className="flex w-full items-center justify-between px-4">
                             <div>
@@ -67,7 +74,7 @@ export default function Header({children, home}) {
                                     onClick={navbarToggleHandler}
                                     id="navbarToggler"
                                     aria-label="Mobile Menu"
-                                    className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
+                                    className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 md:hidden"
                                 >
                               <span
                                   className={`relative my-1.5 block h-0.5 w-[30px] transition-all duration-300 bg-white ${
@@ -87,20 +94,20 @@ export default function Header({children, home}) {
                                 </button>
                                 <nav
                                     id="navbarCollapse"
-                                    className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] px-6 py-4 duration-300 border-gray-700  bg-[#1d2430] lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
+                                    className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] px-6 py-4 duration-300 border-gray-700  bg-[#1d2430] md:visible md:static md:w-auto md:border-none md:!bg-transparent md:p-0 md:opacity-100 ${
                                         navbarOpen
                                             ? "visibility top-full opacity-100"
                                             : "invisible top-[120%] opacity-0"
                                     }`}
                                 >
-                                    <ul className="block lg:flex lg:space-x-12">
+                                    <ul className="block md:flex md:space-x-12">
                                         {menuData.map((menuItem, index) => (
                                             <li key={index} className="group relative">
 
                                                     <Link
                                                         href={menuItem.path}
                                                         className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6  hover:no-underline ${
-                                                            usePathName === menuItem.path
+                                                            usePathName.includes( menuItem.path) 
                                                                 ? "text-white font-bold"
                                                                 : "hover:text-primary text-white/70 hover:text-white"
                                                         }`}

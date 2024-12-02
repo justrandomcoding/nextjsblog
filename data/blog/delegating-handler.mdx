@@ -1,0 +1,203 @@
+---
+title: Authentication on your requests
+publishedAt: '2024-03-08'
+summary: 'Using Delegating Handler to add authentication to your requests.'
+image : /images/blog/blog-02.jpg
+tags: ['CSharp']
+---
+
+
+
+When you send a request using HttpClient, that request passes through a series of message handlers chained together forming a pipeline.
+
+Starts with the reception of the request by the first handler, that does some specific operations and pass to the next handler in line, and so on.
+
+At some point the request is sent, and a response is received and goes back down the pipeline.
+
+DelegatingHandler is just the reverse of Middleware for all the outbound requests.
+
+
+![DelegateHandler Pipeline](/images/blog/2024-11-12.png)
+
+The problem we want to resolve is to include Authentication on all our requests , we need to request an access token  and include it on every request.
+
+
+```cs
+internal sealed class AuthenticationTokenProvider : IAuthenticationTokenProvider
+{
+    private readonly HttpClient _httpClient;
+    private readonly OAuthOptions _oAuthoptions;
+    private Token? _accessToken = null;
+
+    public AuthenticationTokenProvider(HttpClient httpClient, IOptions<OAuthOptions> oAuthOptions)
+    {
+        _httpClient= httpClient;
+        _oAuthoptions = oAuthOptions.Value;
+    }
+
+    private async Task<Token> InternalGetTokenAsync()
+    {
+        var form = new Dictionary<string, string>
+        {
+            {"grant_type", "password"},
+            {"client_id", _oAuthoptions.ClientId},
+            {"client_secret", _oAuthoptions.ClientSecret},
+            {"username", _oAuthoptions.Username},
+            {"password", _oAuthoptions.Password},
+        };
+
+        HttpResponseMessage tokenResponse = await _httpClient.PostAsync(_oAuthoptions.Url, new FormUrlEncodedContent(form));
+        var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+        Token token = JsonConvert.DeserializeObject<Token>(jsonContent)!;
+
+        return token;
+    }
+
+    private async Task<Token> InternalRefreshTokenAsync()
+    {
+        var form = new Dictionary<string, string>
+        {
+            {"grant_type", "refresh_token"},
+            {"refresh_token", _accessToken!.RefreshToken},
+            {"client_id", _oAuthoptions.ClientId},
+            {"client_secret", _oAuthoptions.ClientSecret},
+
+        };
+
+        HttpResponseMessage tokenResponse = await _httpClient.PostAsync(_oAuthoptions.Url, new FormUrlEncodedContent(form));
+        var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+        Token token = JsonConvert.DeserializeObject<Token>(jsonContent)!;
+
+        return token;
+    }
+
+    public async Task<string> GetTokenAsync()
+    {
+        _accessToken ??= await InternalGetTokenAsync();
+
+        return _accessToken.AccessToken;
+    }
+
+    public async Task RefreshTokenAsync()
+    {
+        if (_accessToken is null)
+        {
+            await GetTokenAsync();
+            return;
+        }
+
+        _accessToken = await InternalRefreshTokenAsync();
+    }
+
+    private class Token
+    {
+        [JsonProperty("access_token")]
+        public required string AccessToken { get; set; }
+
+        [JsonProperty("expires_in")]
+        public required int ExpiresIn { get; set; }
+
+        [JsonProperty("refresh_token")]
+        public required string RefreshToken { get; set; }
+    }
+}
+```
+
+We expose 2 methods
+
+GetTokenAsync: to generate the token base on some values stored on our appsettings.json that are passed through dependency injection on the Options pattern.
+```IOptions<OAuthOptions> oAuthOptions```
+
+RefreshTokenAsync: to refresh the token , based on the refresh token that we receive on the GetTokenAsync.
+
+
+Next we want to add this token on every request
+
+```cs
+internal sealed class AuthenticationHandler: DelegatingHandler
+{
+    private readonly IAuthenticationTokenProvider _tokenProvider;
+    private readonly AsyncRetryPolicy<HttpResponseMessage> _policy;
+
+    public AuthenticationHandler(IAuthenticationTokenProvider tokenProvider)
+    {
+        _tokenProvider = tokenProvider;
+        _policy = Policy
+            .HandleResult<HttpResponseMessage>(r => r.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            .RetryAsync(3, (_, _) => tokenProvider.RefreshTokenAsync());
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        => await _policy.ExecuteAsync(async () =>
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _tokenProvider.GetTokenAsync());
+            return await base.SendAsync(request, cancellationToken);
+        });
+}
+```
+
+The AuthenticationHandler class uses Polly to create an AsyncRetryPolicy, this  retry policy wraps the HTTP request and retries it (3 times) when the Status code is Unauthorized or Forbidden. On each retry  calls the refresh token to the AuthenticationTokenProvider gets a new token.
+This allows some resilency in case of some failure on the request.
+
+
+```cs
+builder.Services.AddScoped<AuthenticationHandler>();
+builder.Services.AddHttpClient(HttpClientHelper.SercoApi, (serviceProvider, client) =>
+{
+    var sercoOptions = serviceProvider.GetService<IOptions<SercoOptions>>()!;
+    client.BaseAddress = new Uri(sercoOptions.Value.ApiUri);
+})
+.AddHttpMessageHandler<AuthenticationHandler>();
+```
+
+To put everything in place we need to register our AuthenticationHandler
+
+
+and httpclient with our handler
+
+
+We may want to include other cross-cutting concerns as logging, for that just create a handler for logging
+
+```cs
+public class LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger)
+    : DelegatingHandler
+{
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            logger.LogInformation("Before HTTP request");
+
+            var result = await base.SendAsync(request, cancellationToken);
+
+            result.EnsureSuccessStatusCode();
+
+            logger.LogInformation("After HTTP request");
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "HTTP request failed");
+
+            throw;
+        }
+    }
+}
+
+```
+
+and register it
+```cs
+builder.Services.AddScoped<AuthenticationHandler>();
+builder.Services.AddHttpClient(HttpClientHelper.SercoApi, (serviceProvider, client) =>
+{
+    var sercoOptions = serviceProvider.GetService<IOptions<SercoOptions>>()!;
+    client.BaseAddress = new Uri(sercoOptions.Value.ApiUri);
+})
+.AddHttpMessageHandler<AuthenticationHandler>();
+```
+
+Hope this helps on your journey.

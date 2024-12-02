@@ -1,11 +1,21 @@
 import {getAllTags, getSortedPostsData} from "../../../lib/posts";
+import {BlogList} from "../../../components/bloglist";
+import Pagination from "../../../components/pagination";
+
+const POSTS_PER_PAGE = 10;
 
 export async function getStaticPaths() {
-    const tags= getAllTags();
-    console.log(tags);
+    const allTags= getAllTags();
 
-    const paths = Array.from(tags).map((tag) => ({
-        params: { tag },
+
+
+    const tags = [];
+    allTags.forEach((value)  =>
+        tags.push(value[0])
+    );
+
+    const paths = tags.map((tag,) => ({
+        params: { tag ,  page: 1},
     }));
 
 
@@ -13,15 +23,13 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-    const { tag } = context.params;
+    const { tag, id } = context.params;
     const posts = getSortedPostsData();
 
     const filteredPosts = posts.filter(
         (post) => post.tags && post.tags.includes(tag)
     );
 
-    console.log(filteredPosts);
-    console.log(tag);
     return {
         props: {
             posts: filteredPosts,
@@ -30,18 +38,13 @@ export async function getStaticProps(context) {
     };
 }
 
+// <Pagination page={currentPage} totalPages={totalPages} url="blog/page"/>
+
 export default function TagPage({ posts, tag }) {
     return (
         <div>
             <h1>Posts tagged with "{tag}"</h1>
-            <ul>
-                {posts.map((post) => (
-                    <li key={post.slug}>
-                        <a href={`/blog/${post.slug}`}>{post.title}</a>
-                    </li>
-                ))}
-            </ul>
-            <a href="/blog/tags">Back to all tags</a>
+            <BlogList posts={posts}/>
         </div>
     );
 }

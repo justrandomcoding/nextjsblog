@@ -7,7 +7,7 @@ export default function Layout({ children }) {
       <div className="flex-col flex h-screen">
 
           <Header/>
-          <div className="pt-32 pb-24 flex flex-col mx-28 text-gray-300">
+          <div className="pt-32 pb-24  px-10 flex flex-col text-gray-300 mr-auto ml-auto container">
               {children}
           </div>
           <Footer/>

@@ -23,7 +23,7 @@ export default function Pagination({ page, totalPages, url }) {
                 </span>
                             ) : (
                                 <a
-                                    href={i === 0 ? `/${url}/` : `/${url}/${i + 1}/`}
+                                    href={`/${url}/${i + 1}/`}
                                     className="flex h-9 min-w-[36px] items-center justify-center rounded-md bg-[#1D2430] px-4 text-sm text-white/70 transition hover:bg-[#4a6cf7]  hover:text-white"
                                 >
                                     {i + 1}
