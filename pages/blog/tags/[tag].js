@@ -1,6 +1,7 @@
 import {getAllTags, getSortedPostsData} from "../../../lib/posts";
 import {BlogList} from "../../../components/bloglist";
 import Pagination from "../../../components/pagination";
+import Head from "next/head";
 
 const POSTS_PER_PAGE = 10;
 
@@ -38,13 +39,17 @@ export async function getStaticProps(context) {
     };
 }
 
-// <Pagination page={currentPage} totalPages={totalPages} url="blog/page"/>
-
 export default function TagPage({ posts, tag }) {
     return (
-        <div>
-            <h1>Posts tagged with "{tag}"</h1>
-            <BlogList posts={posts}/>
-        </div>
+        <>
+            <Head>
+                <title>Just Random Coding - {tag}</title>
+                <meta name="description" content={`Posts tagged with ${tag}`}/>
+            </Head>
+            <div>
+                <h1 className="text-white font-bold text-2xl text-center mb-10">Posts tagged with "{tag}"</h1>
+                <BlogList posts={posts}/>
+            </div>
+        </>
     );
 }

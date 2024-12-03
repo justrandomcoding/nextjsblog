@@ -1,6 +1,4 @@
 import Head from 'next/head';
-import  { siteTitle } from '../components/layout';
-import utilStyles from '../styles/utils.module.css';
 import {getAllTags, getSortedPostsData} from '../lib/posts';
 
 
@@ -20,7 +18,8 @@ export default function Home({ allPostsData, tags}) {
   return (
       <div>
           <Head>
-              <title>{siteTitle}</title>
+              <title>Just Random Coding</title>
+              <meta name="description" content="Blog about software development, finance, FIRE, games." />
           </Head>
 
           <div className="container grid grid-cols-1 md:grid-cols-3 gap-6 max-w-screen-xl mx-auto p-6">

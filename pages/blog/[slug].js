@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import rehypePrettyCode from 'rehype-pretty-code';
 import moonlightTheme from '../../styles/moonlight-ii.json' with { type: 'json' };
 import CustomHeading1, {H1} from "../../components/mdx/base";
+import Head from "next/head";
 
 
 const options = {
@@ -45,6 +46,8 @@ export async function getStaticProps({ params }) {
         },
     };
 }
+
+
 
 export function CustomImage(props) {
     return (
@@ -90,6 +93,10 @@ const components = {
 export default function PostPage({ source, metadata }) {
     return (
         <div>
+            <Head>
+                <title>Just Random Coding - {metadata.title}</title>
+                <meta name="description" content={metadata.summary}/>
+            </Head>
             <h1 className="text-white font-bold text-2xl text-center mb-10">{metadata.title}</h1>
             <article >
                 <MDXRemote {...source} components={{...components}} />

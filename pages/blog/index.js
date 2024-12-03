@@ -1,7 +1,7 @@
 import {getSortedPostsData} from "../../lib/posts";
-import Layout from "../../components/layout";
 import Pagination from "../../components/pagination";
 import {BlogList} from "../../components/bloglist";
+import Head from "next/head";
 
 export async function getStaticProps() {
     const allPosts = getSortedPostsData();
@@ -15,25 +15,17 @@ export async function getStaticProps() {
     };
 }
 
-
 export default function Blog({ posts, totalPages }) {
     return (
-        <div>
-
-
-            <BlogList posts={posts} />
-            <Pagination page={1} totalPages={totalPages} url="blog/page" />
-        </div>
-
+        <>
+            <Head>
+                <title>Just Random Coding - Blog</title>
+                <meta name="description" content="List of blog posts about software development." />
+            </Head>
+            <div>
+                <BlogList posts={posts} />
+                <Pagination page={1} totalPages={totalPages} url="blog/page" />
+            </div>
+        </>
     )
 };
-
-
-/*
-*  <div key={post.slug}>
-                            <div style={{position: "relative", width: "100%", maxWidth:512, height: 288, overflow: "hidden", aspectRatio: "16/9"}}>
-                                <img src="/images/blogcard.jpg" style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-                                <label className="font-bold text-white" style={{position: "absolute", top: 20, left: 20}} >{post.title}</label>
-                            </div>
-                            <a href={`/blog/${post.slug}`}>{post.title}</a>
-                        </div>*/

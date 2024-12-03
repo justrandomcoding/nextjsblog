@@ -2,6 +2,7 @@ import Layout from '../../../components/layout';
 import { getSortedPostsData} from "../../../lib/posts";
 import {BlogList} from "../../../components/bloglist";
 import Pagination from "../../../components/pagination";
+import Head from "next/head";
 
 const POSTS_PER_PAGE = 10;
 
@@ -54,11 +55,16 @@ export async function getStaticProps({ params }) {
 */
 export default function Post({ posts, currentPage, totalPages }) {
     return (
-
-        <div>
-            <BlogList posts={posts}/>
-            <Pagination page={currentPage} totalPages={totalPages} url="blog/page"/>
-        </div>
+        <>
+            <Head>
+                <title>Just Random Coding - Blog</title>
+                <meta name="description" content="List of blog posts about software development." />
+            </Head>
+            <div>
+                <BlogList posts={posts}/>
+                <Pagination page={currentPage} totalPages={totalPages} url="blog/page"/>
+            </div>
+        </>
     );
 }
 

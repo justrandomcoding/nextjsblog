@@ -13,6 +13,7 @@ const config = {
     reactStrictMode: true,
 };
 
+
 export default config;
 
 /*const withMDX = require('@next/mdx')({
