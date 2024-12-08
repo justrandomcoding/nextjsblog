@@ -1,0 +1,6 @@
+#Example of how to set all crawlers as user-agent
+User-agent: *
+
+Allow: /
+
+Sitemap: https://www.justrandomcoding.com/sitemap.xml

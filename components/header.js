@@ -8,7 +8,7 @@ import Link from "next/link";
 const menuData = [
     {
         id: 1,
-        title: "Home",
+        title: "Just Random Coding",
         path: "/",
         newTab: false,
     },
@@ -46,7 +46,18 @@ export default function Header({children, home}) {
         window.addEventListener("scroll", handleStickyNavbar);
     });
 
-    const usePathName = usePathname();
+    const usePathName = usePathname().slice(1);
+    console.log(usePathName)
+
+    const IsCurrentPath = (path) => {
+        console.log(path);
+        console.log(usePathName);
+        if (usePathName === "") {
+            return path === "/";
+        }
+
+        return path.includes(usePathName)
+    }
 
     return (
         <>
@@ -65,7 +76,7 @@ export default function Header({children, home}) {
                                 className="header-logo block w-full"
 
                             >
-                            <img width={60} src="/images/logo.png"/>
+                            <img width={60} src="/images/logo.png" alt="Just Random Coding" />
                                 </Link>
                         </div>
                         <div className="flex w-full items-center justify-between px-4">
@@ -107,7 +118,7 @@ export default function Header({children, home}) {
                                                     <Link
                                                         href={menuItem.path}
                                                         className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6  hover:no-underline ${
-                                                            usePathName.includes( menuItem.path) 
+                                                            IsCurrentPath(menuItem.path) 
                                                                 ? "text-white font-bold"
                                                                 : "hover:text-primary text-white/70 hover:text-white"
                                                         }`}

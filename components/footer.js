@@ -59,8 +59,8 @@ const Footer = () => {
 
                         <div className="w-full px-4 md:w-1/2 lg:w-1/2 xl:w-1/2">
                             <div className="mb-12  lg:mb-16 text-center">
-                                <p className="mb-9 text-base leading-relaxed text-white">
-                                    Just random coding 2024
+                                <p className="mb-9 text-base font-semibold leading-relaxed text-white">
+                                    Just Random Coding 2024
                                 </p>
                             </div>
                         </div>
